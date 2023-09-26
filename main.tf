@@ -55,7 +55,35 @@ resource "aws_instance" "ubuntu-dev-machine" {
           private_key = tls_private_key.dev_key.private_key_pem
           timeout = "2m"
         }
-    }
+  }
+
+  provisioner "file" {
+        source      = "azure-bootstrap.sh"
+        destination = "/home/ubuntu/azure-bootstrap.sh"
+
+        connection {
+          type = "ssh"
+          user = "ubuntu"
+          agent = false
+          host = self.public_dns
+          private_key = tls_private_key.dev_key.private_key_pem
+          timeout = "2m"
+        }
+  }
+
+  provisioner "file" {
+        source      = "kostas-azure-example.yaml"
+        destination = "/home/ubuntu/kostas-azure-example.yaml"
+
+        connection {
+          type = "ssh"
+          user = "ubuntu"
+          agent = false
+          host = self.public_dns
+          private_key = tls_private_key.dev_key.private_key_pem
+          timeout = "2m"
+        }
+  }
 
   provisioner "file" {
     source      = "install.bash"

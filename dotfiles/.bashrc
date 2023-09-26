@@ -122,16 +122,27 @@ export IR=${GOPATH}/src/github.com/mesosphere/dkp-insights
 export PATH=$PATH:/usr/local/go/bin:${IR}/.local/tools:${IR}/.local/tools/golang/bin:${IR}/.local/tools/go/bin
 
 # dkp-insights variables
-export PATH=${IR}/.local/tools:${PATH}
+export PATH=${GOPATH}/bin:${IR}/.local/tools:${PATH}
 
 # dkp-insights variables (optionals)
 export TAG_OWNER=$(whoami)
 export TAG_EXPIRATION=24h
+export GOPRIVATE=github.com/mesosphere
 
 export USE_KIND_CLUSTERS=true
 export INSIGHTS_NAMESPACE=kommander
+export REPLAY_NAMESPACE=kommander
 export SKIP_AWS_CREDENTIALS=true
+export KUBERNETES_ENVTEST_VERSION=1.27.x
 
-export GITHUB_TOKEN=<github token>
-export DOCKER_USERNAME=<docker user>
-export DOCKER_PASSWORD="<docker password>"
+export GITHUB_TOKEN= # set value
+export DOCKER_USERNAME= # set value
+export DOCKER_PASSWORD= # set value
+
+export OPENAI_API_KEY= # set value
+export CVE_REPORTER_API_KEY= # set value
+
+alias 'k=kubectl --kubeconfig /home/ubuntu/go/src/github.com/mesosphere/dkp-insights/artifacts/management.kubeconfig'
+alias 'k2=kubectl --kubeconfig /home/ubuntu/go/src/github.com/mesosphere/dkp-insights/artifacts/backend.kubeconfig'
+alias 'set-backend=export KUBECONFIG=~/go/src/github.com/mesosphere/dkp-insights/artifacts/backend.kubeconfig'
+alias 'set-management=export KUBECONFIG=~/go/src/github.com/mesosphere/dkp-insights/artifacts/management.kubeconfig'

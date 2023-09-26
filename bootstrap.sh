@@ -16,7 +16,9 @@ cd "${IR}"
 
 # Install Kommander
 ./hack/create-environments/create-environments.sh install-kommander
+# Enable Entrprise
+./hack/create-environments/create-environments.sh enable-enterprise-license
 
 # Install Insights Snapshot
 make kind-install-helm-management-snapshot
-make kind-install-helm-backend-snapshot
+# make kind-install-helm-backend-snapshot

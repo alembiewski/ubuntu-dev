@@ -1,4 +1,7 @@
 TARGET_REPO := $(GOPATH)/src/github.com/mesosphere/dkp-insights
+TARGET_REPO_CB := $(GOPATH)/src/github.com/mesosphere/chatbot
+TARGET_REPO_AA := $(GOPATH)/src/github.com/mesosphere/apiauthorizer
+
 TERRAFORM_OPTS := -var owner=$(shell whoami) -auto-approve
 EC2_INSTANCE_USER := ubuntu
 
@@ -10,9 +13,11 @@ endif
 SSH_OPTS := -i $(EC2_SSH_KEY) -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30
 
 RSYNC_OPTS := -rav --delete --exclude .idea --exclude .local --exclude artifacts --exclude pkg/generated -e "ssh $(SSH_OPTS)" $(TARGET_REPO) $(EC2_INSTANCE_USER)@$(EC2_INSTANCE_HOST):~/go/src/github.com/mesosphere
+RSYNC_OPTS_CB := -rav --delete --exclude .idea --exclude .local --exclude artifacts --exclude pkg/generated -e "ssh $(SSH_OPTS)" $(TARGET_REPO_CB) $(EC2_INSTANCE_USER)@$(EC2_INSTANCE_HOST):~/go/src/github.com/mesosphere
+RSYNC_OPTS_AA := -rav --delete --exclude .idea --exclude .local --exclude artifacts --exclude pkg/generated -e "ssh $(SSH_OPTS)" $(TARGET_REPO_AA) $(EC2_INSTANCE_USER)@$(EC2_INSTANCE_HOST):~/go/src/github.com/mesosphere
 SSH_TUNNEL_PORT := 1337
 
-PORT_FORWARD ?= 8888
+PORT_FORWARD ?= 8090
 
 # Start one-way synchronization of the $(TARGET_REPO) to the remote host
 .PHONY: sync-repo
@@ -21,6 +26,22 @@ sync-repo:
 	rsync $(RSYNC_OPTS)
 	# Watch for changes and sync
 	fswatch --one-per-batch --recursive --latency 1 $(TARGET_REPO) | xargs -I{} rsync $(RSYNC_OPTS)
+
+# Start one-way synchronization of the $(TARGET_REPO_CB) to the remote host
+.PHONY: sync-chatbot-repo
+sync-chatbot-repo:
+	# Perform initial sync
+	rsync $(RSYNC_OPTS_CB)
+	# Watch for changes and sync
+	fswatch --one-per-batch --recursive --latency 1 $(TARGET_REPO_CB) | xargs -I{} rsync $(RSYNC_OPTS_CB)
+
+# Start one-way synchronization of the $(TARGET_REPO_AA) to the remote host
+.PHONY: sync-apiauthorizer-repo
+sync-apiauthorizer-repo:
+	# Perform initial sync
+	rsync $(RSYNC_OPTS_AA)
+	# Watch for changes and sync
+	fswatch --one-per-batch --recursive --latency 1 $(TARGET_REPO_AA) | xargs -I{} rsync $(RSYNC_OPTS_AA)
 
 # Create SSH tunnel to the remote instance
 .PHONY: tunnel

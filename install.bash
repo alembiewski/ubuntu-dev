@@ -4,6 +4,7 @@ set -euo pipefail
 apt-get update
 
 apt-get install -y \
+  azure-cli \
   curl \
   git \
   gnupg2 \
@@ -21,6 +22,13 @@ apt-get install -y \
   xdg-utils \
   jq
 
+sudo apt update
+sudo apt install -y software-properties-common
+echo | sudo add-apt-repository ppa:deadsnakes/ppa
+
+sudo apt install -y \
+  python3.10 \
+  python3.10-venv
 
 # Docker
 apt-get install -y \
@@ -50,14 +58,21 @@ mv ./kubectl /usr/local/bin/kubectl
 curl -L https://github.com/kubernetes-sigs/cluster-api/releases/download/v0.3.14/clusterctl-linux-amd64 -o clusterctl
 chmod +x ./clusterctl
 mv ./clusterctl /usr/local/bin/clusterctl
-curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.17.0/kind-linux-amd64
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
 chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
 
 # GoLang
-wget https://dl.google.com/go/go1.19.3.linux-amd64.tar.gz
-sudo tar -C /usr/local/ -xzf go1.19.3.linux-amd64.tar.gz
-rm go1.19.3.linux-amd64.tar.gz
+wget https://dl.google.com/go/go1.20.5.linux-amd64.tar.gz
+sudo tar -C /usr/local/ -xzf go1.20.5.linux-amd64.tar.gz
+rm go1.20.5.linux-amd64.tar.gz
+
+# golangci-lint
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.53.3
+
+# Python 3.10 as default
+sudo rm /usr/bin/python3
+sudo ln -s /usr/bin/python3.10 /usr/bin/python3
 
 # Helm
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
